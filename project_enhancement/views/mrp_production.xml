@@ -1,0 +1,46 @@
+<odoo>
+    <record id="mrp_production_form_view_inherited" model="ir.ui.view">
+        <field name="name">mrp.production.view.inherited</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" name="button_box" position="inside">
+                <button class="oe_stat_button" name="document_view" type="object" icon="fa-list-ol">
+                    <field string="Documents" name="document_count" widget="statinfo"/>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='operations']" position="after">
+                <page name="landed_cost" string="Landed Cost">
+                    stock.valuation.adjustment.lines
+                    <field name="valuation_lines" nolabel="1">
+                        <tree>
+                            <field name="cost_line_id"/>
+                            <field name="product_id"/>
+                            <field name="quantity"/>
+                            <field name="additional_landed_cost"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_production_tree_view_totals" model="ir.ui.view">
+            <field name="name">mrp.production.tree.totals</field>
+            <field name="model">mrp.production</field>
+            <field name="arch" type="xml">
+                <tree create="0" delete="0" string="Cost &amp; Revenue" default_order="priority desc, date_planned_start desc" sample="1">
+                    <field name="sequence"/>
+                    <field name="priority" optional="show" widget="priority" nolabel="1"/>
+                    <field name="total_component" optional="show"/>
+                    <field name="total_operation" optional="show"/>
+                    <field name="total_valuation" optional="show"/>
+                    <field name="total_expected" optional="show" sum="Total Expected"/>
+                    <field name="total_actual" optional="show" sum="Total Actual"/>
+                    <field name="total_sale" optional="show" sum="Total Sale"/>
+                    <field name="total_revenue" optional="show" sum="Total Revenue"/>
+
+                </tree>
+            </field>
+        </record>
+</odoo>

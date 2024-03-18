@@ -1,0 +1,57 @@
+<odoo>
+    <data>
+        <record id="view_project_form_inherit" model="ir.ui.view">
+            <field name="name">project.project.form.inherit</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="arch" type="xml">
+                <field name="partner_email" position="after">
+                    <field name="date_of_creation" readonly="1"/>
+                    <field name="delivery_date"/>
+                    <field name="production_receipt_date"/>
+                </field>
+                <notebook>
+                    <page string="تفاصيل">
+                        <group>
+                            <group>
+                                <field name="product_types"/>
+                                <field name="customer_name"/>
+                                <field name="address_name"/>
+                                <field name="contract_date"/>
+                                <field name="delivery_date"/>
+                            </group>
+                            <group>
+                                <field name="internal_units"/>
+                                <field name="company_name"/>
+                                <field name="leaf_color"/>
+                            </group>
+                            <group>
+                                <field name="thick"/>
+                                <field name="extra_code"/>
+                                <field name="wazar_color"/>
+                            </group>
+                            <group>
+                                <field name="glass_sections_color"/>
+                                <field name="handles_color"/>
+                                <field name="glass_color"/>
+                                <field name="light_color"/>
+                            </group>
+                            <group>
+                                <field name="hinges_type"/>
+                                <field name="drawer_pull_type"/>
+                                <field name="side"/>
+                                <field name="lower"/>
+                                <field name="upper"/>
+                                <field name="blakar"/>
+                            </group>
+                            <group>
+                                <field name="notes_header2"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+
+    </data>
+</odoo>

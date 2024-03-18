@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mrp_missing_item,mrp.missing.item,model_mrp_missing_item,,1,1,1,1
+access_production_planning,access.production.planning,model_production_planning,,1,1,1,1
+access_production_planning_wizard,access.production.planning.wizard,model_production_planning_wizard,,1,1,1,1
+access_select_plan_wizard,access.select.plan.wizard,model_select_plan_wizard,,1,1,1,1
+access_generate_rfq_wizard,access.generate.rfq.wizard,model_generate_rfq_wizard,,1,1,1,1
+access_generate_rfq_wizard_line,access.generate.rfq.wizard.line,model_generate_rfq_wizard_line,,1,1,1,1
+

@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+        <record id="view_project_kanban_inherit" model="ir.ui.view">
+            <field name="name">project.project.kanban.inherit</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.view_project_kanban"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="date_of_creation"/>
+                </field>
+                <xpath expr="//div[@class='o_primary']" position="after">
+                    <span><t t-esc="record.date_of_creation.value"/></span>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

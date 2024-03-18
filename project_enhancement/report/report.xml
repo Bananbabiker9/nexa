@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="report_mrp_production_cost" model="ir.actions.report">
+            <field name="name">Mrp Production Cost</field>
+            <field name="model">mrp.production</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">project_enhancement.mrp_production_cost</field>
+            <field name="report_file">project_enhancement.mrp_production_cost</field>
+            <field name="binding_model_id" ref="model_mrp_production"/>
+            <field name="binding_type">report</field>
+        </record>
+</odoo>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_order_form_project_inherit" model="ir.ui.view">
+            <field name="name">sale.order.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="percentage"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree/field[@name='price_unit']" position="after">
+                    <field name="percentage"/>
+
+                    <field name="total_component_cost" invisible="1" readonly="1"/>
+                    <field name="total_operation_cost" invisible="1" readonly="1"/>
+                    <field name="total_cost" readonly="1" force_save="1" optional="1"/>
+                    <field name="basic_subtotal" invisible="1"/>
+                    <field name="remain_amount"/>
+                    <field name="invoice_status" invisible="1"/>
+                    <field name="is_compute" invisible="1"/>
+                </xpath>
+
+            </field>
+        </record>
+
+    </data>
+</odoo>

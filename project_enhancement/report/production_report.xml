@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_mrp_production_bom">
+        <div class="container o_mrp_bom_report_page">
+            <t t-if="data.move_raw_ids or data.workorder_ids or data.valuation_lines">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 style="display:inline;">BoM Structure </h1>
+                        <h1 style="display:inline;" class="o_mrp_prod_cost">&amp; Cost</h1>
+                        <h3>
+                            <t t-esc="data.product_id.name"/>
+                        </h3>
+                    </div>
+                </div>
+                <t t-set="currency" t-value="data.company_id.currency_id"/>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="mt16">
+                            <table width="100%" class="o_mrp_bom_expandable">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Product</th>
+                                        <th name="th_mrp_bom_h">BoM</th>
+                                        <th class="text-right">Quantity</th>
+                                        <th class="text-left" groups="uom.group_uom">Unit of Measure</th>
+                                        <th class="o_mrp_bom_cost text-right" title="This is the cost based on the BoM of the product. It is computed by summing the costs of the components and operations needed to build the product.">BoM Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <span><t t-esc="data.product_id.name"/></span>
+                                        </td>
+                                        <td name="td_mrp_bom">
+                                            <div><t t-esc="data.bom_id.display_name"/></div>
+                                        </td>
+                                        <td class="text-right"><span><t t-esc="data.product_qty" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/></span></td>
+                                        <td groups="uom.group_uom"><span><t t-esc="data.product_uom_id.name"/></span></td>
+                                        <td class="o_mrp_prod_cost text-right">
+                                            <span><t t-esc="data.product_id.with_company(company).standard_price" t-options='{"widget": "monetary", "display_currency": currency}'/></span>
+                                        </td>
+
+                                    </tr>
+                                    <t t-call="project_enhancement.report_mrp_bom_pdf_line"/>
+                                    <t t-call="project_enhancement.report_mrp_bom_pdf_operation_line"/>
+                                    <t t-call="project_enhancement.report_mrp_bom_pdf_valuation_line"/>
+                                </tbody>
+<!--                                <tfoot>-->
+<!--                                    <tr>-->
+<!--                                        <td></td>-->
+<!--                                        <td name="td_mrp_bom_f"></td>-->
+<!--                                        <td class="text-right o_mrp_prod_cost"><span><strong>Unit Cost</strong></span></td>-->
+<!--                                        <td groups="uom.group_uom"></td>-->
+<!--                                        <td class="o_mrp_prod_cost text-right">-->
+<!--                                            <span><t t-esc="data.get('bom_id')['price']/data.get('bom_id')['bom_qty']" t-options='{"widget": "monetary", "display_currency": currency}'/></span>-->
+<!--                                        </td>-->
+<!--                                        <td t-if="data['report_structure'] != 'bom_structure'" class="o_mrp_bom_cost text-right">-->
+<!--                                            <span><t t-esc="data.get('bom_id')['total']/data.get('bom_id')['bom_qty']" t-options='{"widget": "monetary", "display_currency": currency}'/></span>-->
+<!--                                        </td>-->
+<!--                                    </tr>-->
+<!--                                </tfoot>-->
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+            <t t-else="">
+                <h1 class="text-center">No data available.</h1>
+            </t>
+        </div>
+    </template>
+
+
+
+    <template id="report_mrp_bom_pdf_line">
+      <t t-set="currency" t-value="data.company_id.currency_id"/>
+      <t t-foreach="data.move_raw_ids" t-as="component">
+          <tr>
+              <td>
+                  <div t-att-style="space_td">
+                    <div><t t-esc="component.product_id.name"/></div>
+                  </div>
+              </td>
+              <td name="td_mrp_code">
+                  <div t-if="data.bom_id.code" />
+              </td>
+              <td class="text-right">
+                  <span>
+                      <t t-esc="component.product_qty" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/>
+                  </span>
+              </td>
+              <td groups="uom.group_uom"><span><t t-esc="component.product_uom.name"/></span></td>
+              <td class="o_mrp_prod_cost text-right">
+                  <span t-esc="component.product_id.with_company(company).standard_price" t-options='{"widget": "monetary", "display_currency": currency}'/>
+              </td>
+          </tr>
+      </t>
+    </template>
+
+    <template id="report_mrp_bom_pdf_operation_line">
+      <t t-set="currency" t-value="data.company_id.currency_id"/>
+        <tr>
+              <td>
+                  <div t-att-style="space_td">
+                    <div>Operations</div>
+                  </div>
+              </td>
+              <td name="td_mrp_code"></td>
+              <td class="text-right">
+                  <span>
+                  </span>
+              </td>
+              <td></td>
+              <td class="o_mrp_prod_cost text-right">
+              </td>
+          </tr>
+      <t t-foreach="data.workorder_ids" t-as="operation">
+          <tr>
+              <td>
+                  <div t-att-style="space_td">
+                    <div><t t-esc="operation.name+' - '+operation.product_id.name"/> </div>
+                  </div>
+              </td>
+              <td name="td_mrp_code">
+              </td>
+              <td class="text-right">
+                  <span>
+                      <t t-esc="operation.duration_expected" t-options='{"widget": "float_time"}'/>
+                  </span>
+              </td>
+              <td>minutes</td>
+              <td class="o_mrp_prod_cost text-right">
+                  <span t-esc="operation.workcenter_id.costs_hour *(operation.duration_expected/60)" t-options='{"widget": "monetary", "display_currency": currency}'/>
+              </td>
+          </tr>
+      </t>
+    </template>
+
+    <template id="report_mrp_bom_pdf_valuation_line">
+      <t t-set="currency" t-value="data.company_id.currency_id"/>
+        <tr>
+              <td>
+                  <div t-att-style="space_td">
+                    <div>Landed Costs</div>
+                  </div>
+              </td>
+              <td name="td_mrp_code">
+              </td>
+              <td class="text-right">
+                  <span>
+                  </span>
+              </td>
+              <td></td>
+              <td class="o_mrp_prod_cost text-right">
+              </td>
+          </tr>
+      <t t-foreach="data.valuation_lines" t-as="landed_cost">
+          <tr>
+              <td>
+                  <div t-att-style="space_td">
+                    <div><t t-esc="landed_cost.cost_line_id.name"/> </div>
+                  </div>
+              </td>
+              <td name="td_mrp_code">
+              </td>
+              <td class="text-right">
+                  <span>
+                      <t t-esc="landed_cost.quantity" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/>
+                  </span>
+              </td>
+              <td><span><t t-esc="landed_cost.product_id.uom_id.name"/></span></td>
+              <td class="o_mrp_prod_cost text-right">
+                  <span t-esc="landed_cost.additional_landed_cost" t-options='{"widget": "monetary", "display_currency": currency}'/>
+              </td>
+          </tr>
+      </t>
+    </template>
+
+    <template id="mrp_production_cost">
+        <t t-set="data_report_landscape" t-value="True"/>
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="data">
+                <div class="page">
+                    <t t-call="project_enhancement.report_mrp_production_bom"/>
+                </div>
+                <p style="page-break-before:always;"> </p>
+            </t>
+        </t>
+    </template>
+</odoo>

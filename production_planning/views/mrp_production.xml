@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="mrp_production_tree_view_2" model="ir.ui.view">
+            <field name="name">mrp.production.tree</field>
+            <field name="model">mrp.production</field>
+            <field name="arch" type="xml">
+                <tree string="Manufacturing Orders" default_order="priority desc, date_planned_start desc" multi_edit="1" sample="1">
+                    <header>
+                        <button name="button_plan" type="object" string="Plan"/>
+                        <button name="do_unreserve" type="object" string="Unreserve"/>
+                    </header>
+                    <field name="sequence"/>
+                    <field name="priority" optional="show" widget="priority" nolabel="1"/>
+                    <field name="message_needaction" invisible="1"/>
+                    <field name="name" decoration-bf="1"/>
+                    <field name="date_planned_start" readonly="1" optional="show" widget="remaining_days"/>
+                    <field name="date_deadline" widget="remaining_days" attrs="{'invisible': [('state', 'in', ['done', 'cancel'])]}" optional="hide"/>
+                    <field name="delivery_date" readonly="1"/>
+                    <field name="material_arrival_date"/>
+                    <field name="product_id" readonly="1" optional="show"/>
+                    <field name="product_uom_id" string="Unit of Measure" options="{'no_open':True,'no_create':True}" groups="uom.group_uom" optional="show"/>
+                    <field name="lot_producing_id" optional="hide"/>
+                    <field name="bom_id" readonly="1" optional="hide"/>
+                    <field name="origin" optional="show"/>
+                    <field name="user_id" optional="hide" widget="many2one_avatar_user"/>
+                    <field name="reservation_state" invisible="1"/>
+                    <field name="components_availability_state" invisible="1"/>
+                    <field name="components_availability" optional="show"
+                        decoration-danger="components_availability_state == 'late'"
+                        decoration-warning="components_availability_state == 'expected'"/>
+                    <field name="product_qty" sum="Total Qty" string="Quantity" readonly="1" optional="show"/>
+                    <field name="company_id" readonly="1" groups="base.group_multi_company" optional="show"/>
+                    <field name="state" optional="show" widget='badge' decoration-success="state == 'done'" decoration-info="state not in ('done', 'cancel')"/>
+                    <field name="activity_exception_decoration" widget="activity_exception"/>
+                    <field name="delay_alert_date" invisible="1"/>
+                    <field string=" " name="json_popover" widget="stock_rescheduling_popover" attrs="{'invisible': [('delay_alert_date', '=', False)]}"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="mrp_production_tree_view" model="ir.ui.view">
+            <field name="name">mrp_production_tree_view</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='date_deadline']" position="after">
+                    <field name="delivery_date" readonly="1"/>
+                    <field name="material_arrival_date"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="mrp_production_form_view" model="ir.ui.view">
+            <field name="name">mrp.production.form</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="arch" type="xml">
+
+<!--                <xpath expr="//button[@name='action_confirm'][2]" position="attributes">-->
+<!--                    <attribute name="attrs">{'invisible': [('state', 'not in', ['costing'])]}</attribute>-->
+<!--                </xpath>-->
+
+<!--                <xpath expr="//header" position="inside">-->
+<!--&lt;!&ndash;                    <button name="action_send_to_technical" states="draft" type="object" string="Technical Office"/>&ndash;&gt;-->
+<!--                    <button name="action_send_to_costing" states="technical" type="object" string="Costing"/>-->
+<!--                    <button name="action_send_to_draft" states="technical" type="object" string="Confirm"/>-->
+<!--                </xpath>-->
+
+                <field name="bom_id" position="after">
+                    <field name="is_production_planning" invisible="1"/>
+                    <field name="sale_order_id" attrs="{'invisible': [('is_production_planning', '=', False)]}"/>
+                </field>
+                <xpath expr="//field[@name='user_id']" position="before">
+                    <field name="date_planned_finished"/>
+                    <field name="production_plan"/>
+                    <field name="delivery_date"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_mrp_production_filter" model="ir.ui.view">
+            <field name="name">mrp.production.filter</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.view_mrp_production_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="production_plan"/>
+                </xpath>
+                <xpath expr="//filter[@name='todo']" position="after">
+                    <filter string="Technical" name="technical" domain="[('state', '=', 'technical')]"/>
+                    <filter string="Costing" name="costing" domain="[('state', '=', 'costing')]"/>
+                </xpath>
+                <xpath expr="//filter[@name='filter_planned']" position="after">
+                    <filter string="Not Planned" name="filter_not_planned" domain="[('production_plan', '=', False)]"/>
+                </xpath>
+                <xpath expr="//group" position="inside">
+                    <filter string="Production Plan" name="production_plan" domain="[]" context="{'group_by': 'production_plan'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_mrp_production_costing" model="ir.actions.act_window">
+            <field name="name">Manufacturing Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mrp.production</field>
+            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="mrp.view_mrp_production_filter"/>
+            <field name="context">{'search_default_costing': True,'default_is_production_planning': True, 'default_company_id': allowed_company_ids[0]}</field>
+            <field name="domain">[('state', '=', 'costing')]</field>
+        </record>
+
+        <record id="action_mrp_production_technical" model="ir.actions.act_window">
+            <field name="name">Manufacturing Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mrp.production</field>
+            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="mrp.view_mrp_production_filter"/>
+            <field name="context">{'search_default_technical': True, 'default_is_production_planning': True, 'default_company_id': allowed_company_ids[0]}</field>
+            <field name="domain">[('state', '=', 'technical')]</field>
+        </record>
+
+        <record id="production_planning_mrp_production_action" model="ir.actions.act_window">
+            <field name="name">Manufacturing Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mrp.production</field>
+            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="mrp.view_mrp_production_filter"/>
+            <field name="context">{'search_default_todo': True, 'search_default_filter_not_planned': True,'default_is_production_planning': True, 'default_company_id': allowed_company_ids[0]}</field>
+            <field name="domain">[('picking_type_id.active', '=', True), ('is_production_planning', '=', True), ('state', 'not in', ('technical', 'costing'))]</field>
+        </record>
+
+        <record id="mrp.mrp_production_action" model="ir.actions.act_window">
+            <field name="name">Manufacturing Orders</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mrp.production</field>
+            <field name="view_mode">tree,kanban,form,calendar,pivot,graph</field>
+            <field name="view_id" eval="False"/>
+            <field name="search_view_id" ref="mrp.view_mrp_production_filter"/>
+            <field name="context">{'search_default_todo': True, 'default_company_id': allowed_company_ids[0]}</field>
+            <field name="domain">[('picking_type_id.active', '=', True)]</field>
+        </record>
+
+        <record id="action_generate_missing_items_from_list" model="ir.actions.server">
+            <field name="name">Generate Missing Items</field>
+            <field name="model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    action = records.action_generate_missing_items()
+            </field>
+        </record>
+
+        <record id="action_plan_production_order_list" model="ir.actions.server">
+            <field name="name">Plan Production Orders</field>
+            <field name="model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    action = records.action_plan_production_order()
+            </field>
+        </record>
+
+        <record id="action_unplan_production_order_list" model="ir.actions.server">
+            <field name="name">UnPlan Production Orders</field>
+            <field name="model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    action = records.action_unplan_production_order()
+            </field>
+        </record>
+
+        <record id="action_correct_operations_list" model="ir.actions.server">
+            <field name="name">Correct Operations</field>
+            <field name="model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    action = records.action_correct_operations()
+            </field>
+        </record>
+
+    </data>
+</odoo>

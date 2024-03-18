@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Top menu item -->
+    <menuitem name="Production Planning" id="menu_production_planning"
+              web_icon="production_planning,static/description/icon.png"
+              sequence="100">
+
+        <menuitem id="order_menu" name="Order" sequence="1">
+            <menuitem id="mrp_production_technical_menu" name="Technical Office" sequence="1"
+                      action="action_mrp_production_technical"/>
+            <menuitem id="mrp_production_costing_menu" name="Costing" sequence="2"
+                      action="action_mrp_production_costing"/>
+        </menuitem>
+
+        <menuitem id="primary_stage_menu" name="Primary Stage" sequence="2">
+            <menuitem id="manufacturing_order_menu" name="Manufacturing Order" sequence="1"
+                      action="production_planning_mrp_production_action"/>
+            <menuitem id="mrp_missing_items_menu" name="Missing Items" sequence="2"
+                      action="action_mrp_missing_items"/>
+            <menuitem name="Requested Items" id="requested_items_menu" action="requested_items_action" sequence="3"/>
+        </menuitem>
+
+        <menuitem id="planning_menu" name="Planning" sequence="3">
+            <menuitem id="production_planning_menu"
+                  name="Production Plan"
+                  sequence="1"
+                  action="production_planning_act_window"/>
+            <menuitem id="menu_workorder_production_planning"
+                  name="Workorders"
+                  sequence="2"
+                  action="action_mrp_workorder_planning_production"/>
+            <menuitem id="menu_select_plan"
+                  name="Select Plan"
+                  sequence="3"
+                  action="select_plan_wizard_action"/>
+        </menuitem>
+
+    </menuitem>
+
+    <menuitem id="purchase_mrp_missing_items_menu" name="Missing Items" sequence="25"
+              action="action_mrp_missing_items" parent="purchase.menu_purchase_products"/>
+    <menuitem name="Requested Items" id="purchase_requested_items_menu" action="requested_items_action"
+              sequence="26" parent="purchase.menu_purchase_products"/>
+
+    <menuitem id="mrp_Planning_menu" name="Production Planning" parent="mrp.mrp_planning_menu_root" sequence="6"/>
+    <menuitem id="mrp_production_planning_menu"
+                  name="Production Plan"
+                  sequence="7"
+                  action="production_planning_act_window" parent="mrp.mrp_planning_menu_root"/>
+    <menuitem id="menu_select_plan_mrp"
+                  name="Select Plan"
+                  sequence="8"
+                  action="select_plan_wizard_action" parent="mrp.mrp_planning_menu_root"/>
+
+</odoo>

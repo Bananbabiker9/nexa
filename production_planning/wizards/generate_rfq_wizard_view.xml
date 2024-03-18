@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="generate_rfq_wizard_view_form" model="ir.ui.view">
+            <field name="name">generate.rfq.wizard.form</field>
+            <field name="model">generate.rfq.wizard</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="partner_id"/>
+                    </group>
+                    <group>
+                        <field name="lines_ids" widget="section_and_note_one2many" mode="tree" no_label="1">
+                            <tree editable="bottom" no_create="1">
+                                <field name="product_id"/>
+                                <field name="quantity"/>
+                                <field name="product_uom_id"/>
+                                <field name="mrp_order_id"/>
+                                <field name="missing_item_ids" widget="many2many_tags"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <footer>
+                        <button string="Generate" name="action_generate_rfq" type="object" class="oe_highlight"/>
+                        <button string="Cancel" class="btn btn-default" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

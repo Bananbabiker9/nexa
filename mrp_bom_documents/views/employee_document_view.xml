@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record model="ir.ui.view" id="mrp_bom_form_view">
+        <field name="name">mrp.form.view</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <div class="oe_button_box" position="inside">
+                <button class="oe_stat_button" name="document_view" type="object" icon="fa-list-ol">
+                    <field string="Documents" name="document_count" widget="statinfo"/>
+                </button>
+            </div>
+        </field>
+    </record>
+
+    <record model='ir.ui.view' id='bom_document_form_view'>
+        <field name="name">bom.document.form</field>
+        <field name="model">bom.document</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="bom_ref" string="BOM"/>
+                            <field name="doc_attachment_id" widget="many2many_binary" class="oe_inline"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model='ir.ui.view' id='bom_documents_tree_view'>
+        <field name="name">bom.document.tree</field>
+        <field name="model">bom.document</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="bom_ref" string="BOM"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="search_bom_documents" model="ir.ui.view">
+            <field name="name">bom.document.search</field>
+            <field name="model">bom.document</field>
+            <field name="arch" type="xml">
+                <search string="BOM Documents">
+                    <group expand="0" string="Group By">
+                        <filter name="BOM" string="BOM" domain="[]" context="{'group_by':'bom_ref'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    <record id="bom_document_action" model="ir.actions.act_window">
+        <field name="name">BOM Documents</field>
+        <field name="res_model">bom.document</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_BOM': 1}</field>
+    </record>
+
+</odoo>

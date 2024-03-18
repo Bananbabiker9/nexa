@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_mrp_production_planning_workorder_form_view_filter" model="ir.ui.view">
+            <field name="name">mrp.production.work.order.select</field>
+            <field name="model">mrp.workorder</field>
+            <field name="arch" type="xml">
+                <search string="Search Work Orders">
+                    <field name="name" string="Work Order"/>
+                    <field name="workcenter_id"/>
+                    <field name="production_id"/>
+                    <field name="production_plan"/>
+                    <filter string="In Progress" name="progress" domain="[('state', '=', 'progress')]"/>
+                    <filter string="Ready" name="ready" domain="[('state', '=', 'ready')]"/>
+                    <filter string="Pending" name="pending" domain="[('state', '=', 'pending')]"/>
+                    <filter string="Finished" name="finish" domain="[('state', '=', 'done')]"/>
+                    <filter string="Available" name="available" domain="[('production_availability', '=', 'assigned')]"/>
+                    <separator/>
+                    <filter string="Late" name="late" domain="['&amp;', ('date_planned_start', '&lt;', current_date), ('state', '=', 'ready')]"
+                            help="Production started late"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Work Center" name="work_center" domain="[]" context="{'group_by': 'workcenter_id'}"/>
+                        <filter string="Production Plan" name="group_production_plan" domain="[]" context="{'group_by': 'production_plan'}"/>
+                        <filter string="Manufacturing Order" name="production" domain="[]" context="{'group_by': 'production_id'}"/>
+                        <filter string="Status" name="status" domain="[]" context="{'group_by': 'state'}"/>
+                        <filter string="Scheduled Date" name="scheduled_month" domain="[]" context="{'group_by': 'date_planned_start'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="workcenter_line_gantt_production_planning" model="ir.ui.view">
+            <field name="name">mrp.production.work.order.gantt.production</field>
+            <field name="model">mrp.workorder</field>
+            <field name="arch" type="xml">
+                <gantt class="o_mrp_workorder_gantt" date_stop="date_planned_finished" date_start="date_planned_start" string="Operations" default_group_by="production_plan" create="0" delete="0"
+                       progress="progress" plan="0"
+                       decoration-danger="json_popover and 'text-danger' in json_popover"
+                       decoration-success="state == 'done'"
+                       decoration-warning="state == 'cancel' or (json_popover and 'text-warning' in json_popover)"
+                       color="workcenter_id"
+                       display_unavailability="1"
+                       sample="1"
+                       form_view_id="%(mrp.mrp_production_workorder_form_view_inherit)d">
+
+                    <field name="date_planned_start"/>
+                    <field name="state"/>
+                    <field name="workcenter_id"/>
+                    <field name="json_popover"/>
+
+                    <templates>
+                        <div t-name="gantt-popover" class="container-fluid">
+                            <div class="row no-gutters">
+                                <div class="col">
+                                    <ul class="pl-1 mb-0 list-unstyled">
+                                        <li><strong>Start Date: </strong> <t t-esc="userTimezoneStartDate.format('YYYY-MM-DD HH:mm:ss')"/></li>
+                                        <li><strong>Stop Date: </strong> <t t-esc="userTimezoneStopDate.format('YYYY-MM-DD HH:mm:ss')"/></li>
+                                        <li><strong>Workcenter: </strong> <t t-esc="workcenter_id[1]"/></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </templates>
+                </gantt>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_mrp_workorder_planning_production">
+            <field name="name">Production Planning</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">mrp.workorder</field>
+            <field name="domain">[('production_state','not in',('done','cancel'))]</field>
+            <field name="view_mode">gantt,tree,form,calendar,pivot,graph</field>
+            <field name="search_view_id" ref="view_mrp_production_planning_workorder_form_view_filter"/>
+            <field name="view_id" ref="workcenter_line_gantt_production_planning"/>
+            <field name="context">{'search_default_group_production_plan': True, 'search_default_production': True, 'search_default_ready': True, 'search_default_progress': True, 'search_default_pending': True}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No work orders to do!
+                </p><p>
+                Work orders are operations to do as part of a manufacturing order.
+                Operations are defined in the bill of materials or added in the manufacturing order directly.
+            </p>
+            </field>
+        </record>
+
+        <menuitem id="menu_mrp_workorder_production_planning"
+                  name="Production Plan"
+                  sequence="1"
+                  action="action_mrp_workorder_planning_production"
+                  parent="mrp_workorder.mrp_workorder_menu_planning"/>
+    </data>
+</odoo>

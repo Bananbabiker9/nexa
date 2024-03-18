@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="bom_tree_view" model="ir.ui.view">
+            <field name="name">mrp.bom.tree</field>
+            <field name="model">mrp.bom</field>
+            <field eval="7" name="priority"/>
+            <field name="arch" type="xml">
+                <tree string="Bills of materials" multi_edit="1" duplicate="false" sample="1">
+                    <header>
+                        <button name="action_assign_project_pom" type="object" string="Add BOM"/>
+                        <button name="action_duplicate_pom" type="object" string="Duplicate BOM"/>
+                    </header>
+                    <field name="active" invisible="1"/>
+                    <field name="sequence" widget="handle"/>
+                    <field name="product_tmpl_id"/>
+                    <field name="total_component_cost"/>
+                    <field name="total_operation_cost"/>
+                    <field name="code" optional="show"/>
+                    <field name="type"/>
+                    <field name="product_id" groups="product.group_product_variant" optional="hide"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                    <field name="product_qty" optional="hide"/>
+                    <field name="product_uom_id" groups="uom.group_uom" optional="hide" string="Unit of Measure"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id=">mrp_bom_tree_view" model="ir.ui.view">
+            <field name="name">>mrp.bom.tree</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="inside">
+                    <header>
+                        <button name="action_view_select_bom" type="object" string="Add Bom"/>
+                    </header>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_view_boms" model="ir.actions.server">
+            <field name="name">Add BOMs</field>
+            <field name="model_id" ref="project_enhancement.model_mrp_bom"/>
+            <field name="binding_model_id" ref="project_enhancement.model_mrp_bom"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                action = records.action_view_select_bom()
+            </field>
+        </record>
+
+        <record id="action_create_offer" model="ir.actions.server">
+            <field name="name">Add Offer</field>
+            <field name="model_id" ref="project_enhancement.model_mrp_bom"/>
+            <field name="binding_model_id" ref="project_enhancement.model_mrp_bom"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                if records:
+                    action = records.action_generate_rfq()
+            </field>
+        </record>
+
+        <record id="mrp_bom_form_view" model="ir.ui.view">
+            <field name="name">mrp.bom.form</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_qty']" position="after">
+                    <field name="pom_project_id"/>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

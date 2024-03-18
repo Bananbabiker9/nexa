@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="project_form_inherit" model="ir.ui.view">
+            <field name="name">project.form.inherit</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@name='button_box']" position="inside">
+                    <button  class="oe_stat_button" name="action_view_products" type="object" icon="fa-th-large" >
+                        <field name="product_count" widget="statinfo" string="Products"/>
+                    </button>
+                    <button  class="oe_stat_button" name="action_view_bom" type="object" icon="fa-th-large" >
+                        <field name="pom_count" widget="statinfo" string="POM"/>
+                    </button>
+                    <button  class="oe_stat_button" name="action_view_quotation" type="object" icon="fa-edit" >
+                        <field name="quotation_count" widget="statinfo" string="Offers"/>
+                    </button>
+                    <button  class="oe_stat_button" name="action_view_sale_order" type="object" icon="fa-dollar" >
+                        <field name="sale_count" widget="statinfo" string="Sale Order"/>
+                    </button>
+                    <button  class="oe_stat_button" name="action_view_invoices" type="object" icon="fa-dollar" >
+                        <field name="invoice_count" widget="statinfo" string="Invoice"/>
+                    </button>
+                    <button  class="oe_stat_button" name="action_view_bills" type="object" icon="fa-dollar" >
+                        <field name="vendor_bill_count" widget="statinfo" string="Bills"/>
+                    </button>
+                    <button  class="oe_stat_button" name="action_view_expense" type="object" icon="fa-dollar" >
+                        <field name="expense_count" widget="statinfo" string="Bills"/>
+                    </button>
+                    <button  class="oe_stat_button" name="action_view_mrp" type="object" icon="fa-dollar" >
+                        <field name="mrp_count" widget="statinfo" string="Manufacturing Orders"/>
+                    </button>
+                    <button name="action_view_cost_revenue" string="Cost &amp; Revenue" type="object" icon="fa-dollar" class="oe_stat_button"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="attributes">
+                    <attribute name="required">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="action_generate_quotation" model="ir.actions.server">
+            <field name="name">Generate Offer</field>
+            <field name="model_id" ref="project_enhancement.model_product_product"/>
+            <field name="binding_model_id" ref="project_enhancement.model_product_product"/>
+            <field name="binding_view_types">list</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    action = records.action_generate_rfq()
+            </field>
+        </record>
+
+        <record id="model_sale_order_action_confirm_order" model="ir.actions.server">
+            <field name="name">Create Sales Order</field>
+            <field name="model_id" ref="project_enhancement.model_sale_order"/>
+            <field name="binding_model_id" ref="project_enhancement.model_sale_order"/>
+            <field name="binding_view_types">form,list</field>
+            <field name="state">code</field>
+            <field name="code">action = records.action_confirm_order()</field>
+        </record>
+    </data>
+</odoo>
